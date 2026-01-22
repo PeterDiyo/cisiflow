@@ -29,7 +29,7 @@ export const ProjectView = () => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.metaKey || e.ctrlKey) {
-        if (e.key === "K") {
+        if (e.key === "k") {
           e.preventDefault();
           setCommandDialogOpen((open) => !open);
         }
