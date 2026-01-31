@@ -46,3 +46,46 @@ export const get = query({
       .collect();
   },
 });
+
+export const getById = query({
+  args: { id: v.id("projects") },
+
+  handler: async (ctx, args) => {
+    const identity = await verifyAuth(ctx);
+
+    const project = await ctx.db.get("projects", args.id);
+
+    if (!project) {
+      throw new Error("Project not found");
+    }
+
+    if (project.ownerId !== identity.subject) {
+      throw new Error("Unauthorized access to project");
+    }
+
+    return project;
+  },
+});
+
+export const rename = mutation({
+  args: { id: v.id("projects"), name: v.string() },
+
+  handler: async (ctx, args) => {
+    const identity = await verifyAuth(ctx);
+
+    const project = await ctx.db.get("projects", args.id);
+
+    if (!project) {
+      throw new Error("Project not found");
+    }
+
+    if (project.ownerId !== identity.subject) {
+      throw new Error("Unauthorized access to project");
+    }
+
+    await ctx.db.patch("projects", args.id, {
+      name: args.name,
+      updatedAt: Date.now(),
+    });
+  },
+});
